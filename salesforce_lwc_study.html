@@ -1,0 +1,198 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Salesforce 開発入門 | LWC Bike Selector</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#20365d;background:#f5f7fb;line-height:1.75}header{position:sticky;top:0;z-index:10;background:#1e345c;color:white;padding:16px max(16px,calc((100vw - 1150px)/2));box-shadow:0 2px 12px #10234222}.top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.brand{font-size:20px;font-weight:800;flex:1;white-space:nowrap}.search{padding:11px;border:1px solid #a6b6d2;border-radius:7px;background:#ffffff1c;color:white;min-width:180px;flex:1;font-size:15px}.search::placeholder{color:#c8d3e6}button,.nav a{cursor:pointer}button{border:1px solid #c7d4e8;background:white;color:#1e477e;padding:9px 13px;border-radius:9px;font-weight:700}.menu{border-color:#9cb0d1;background:transparent;color:white}nav{display:none;gap:9px;flex-wrap:wrap;margin-top:12px}nav.open{display:flex}nav a{color:#fff;text-decoration:none;background:#ffffff20;padding:6px 12px;border-radius:8px}main{max-width:1150px;margin:auto;padding:24px 16px 90px}.hero{background:white;padding:25px;border-radius:16px;border:1px solid #e1e7f0;margin-bottom:24px}.hero h1{font-size:26px;margin:0 0 10px}.muted{color:#63738d}.flow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:20px 0}.node{padding:8px 13px;border:1px solid #bad0e8;border-radius:9px;background:#eaf2fc;font-weight:750}.section{background:white;border:1px solid #e0e6ef;border-radius:15px;margin:24px 0;overflow:hidden}.section-head{padding:19px 21px;border-bottom:1px solid #e0e6ef}.section-head h2{margin:0;font-size:23px}.section-head p{margin:4px 0 0}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}.tab{background:#eaf0f9;border:1px solid #cbd7e8}.tab.active{background:#2d70ca;color:white}.codebox{background:#17263d;color:#e8f0ff;border-radius:10px;padding:15px;overflow:auto;font:13px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:4}.filepanel{padding:20px;border-bottom:1px solid #e0e6ef}.filelabel{font-weight:750;margin-bottom:10px}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;table-layout:fixed;min-width:720px}th,td{border:1px solid #d9e0eb;text-align:left;vertical-align:top;padding:16px}th{background:#edf2f9;font-size:14px}th:nth-child(1){width:25%}th:nth-child(2){width:17%}th:nth-child(3){width:58%}td code{background:#edf1f6;border-radius:5px;padding:2px 5px;overflow-wrap:anywhere;white-space:normal}td p{margin:10px 0 0}.status{font-weight:700;border:0;border-radius:8px;padding:8px 10px;min-width:100px}.s0{background:#e7edf6;color:#455b79}.s1{background:#dceafd;color:#2461a7}.s2{background:#dff1e5;color:#34784b}.source{font-size:12px;color:#697c97;margin-bottom:6px}.note{border-left:4px solid #3981d5;padding:12px 16px;background:#edf5ff;border-radius:5px;margin:18px 0}.hide{display:none!important}.mini{font-size:13px}.footer{color:#667b98;text-align:center;padding:25px}@media(max-width:600px){header{padding:12px}.brand{font-size:16px}.search{min-width:110px;width:120px}.hero h1{font-size:23px}.section-head h2{font-size:20px}main{padding:16px 10px 60px}.filepanel{padding:14px}}
+/* 全体像と図 */
+#overview,#data,#list,#tile,#selector,#detail{scroll-margin-top:112px}
+.hero{padding:clamp(20px,4vw,38px)}
+.eyebrow{display:inline-block;margin:0 0 8px;color:#2467ad;font-size:13px;font-weight:800;letter-spacing:.08em}
+.hero h1{font-size:clamp(25px,3.4vw,36px);line-height:1.35}
+.hero .lead{margin:0 0 24px;color:#4f6381}
+.overview-title{font-size:21px;line-height:1.4;margin:30px 0 12px}
+.overview-title small{display:block;color:#647791;font-size:13px;font-weight:500;margin-top:3px}
+.overview-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(270px,.85fr);gap:18px;align-items:stretch}
+.diagram-panel{background:#f8fbff;border:1px solid #d9e5f2;border-radius:14px;padding:18px;min-width:0}
+.diagram-label{color:#486386;font-size:13px;font-weight:800;letter-spacing:.04em;margin:0 0 12px}
+.screen-frame{border:1px solid #c9d8e9;border-radius:12px;background:#fff;overflow:hidden;box-shadow:0 10px 25px #233e6810}
+.screen-bar{background:#1e345c;color:#fff;font-weight:800;padding:10px 14px;font-size:14px}
+.screen-body{display:grid;grid-template-columns:1.35fr 1fr;min-height:230px}
+.screen-list{padding:13px;border-right:1px solid #d9e3f0}
+.screen-detail{padding:13px;background:#f6f9fd}
+.mock-title{font-size:12px;font-weight:800;color:#587292;margin:0 0 10px}
+.mock-product{display:flex;gap:8px;align-items:center;background:#fff;border:1px solid #d9e4f1;border-radius:8px;padding:8px;margin:7px 0;font-size:12px;font-weight:700}
+.mock-product.is-selected{border:2px solid #2b79cf;background:#f1f7ff}
+.bike-icon{width:34px;height:22px;flex:none;stroke:#2b79cf;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mock-chip{display:inline-block;background:#dcecff;color:#215d9d;border-radius:20px;padding:2px 8px;font-size:11px;font-weight:800}
+.mock-detail-name{font-weight:800;margin:12px 0 5px}
+.mock-detail-line{height:7px;background:#dbe5f0;border-radius:5px;margin-top:8px;width:88%}
+.mock-detail-line.short{width:55%}
+.diagram-caption{font-size:12px;color:#63758e;margin:10px 0 0;line-height:1.5}
+.tree-root,.tree-child,.tree-leaf{border:1px solid #bdd2e9;background:#fff;border-radius:9px;padding:10px 11px;text-align:center;font-size:13px}
+.tree-root{background:#e9f2ff;border-color:#8eb8e4;font-weight:800}
+.tree-child strong,.tree-leaf strong{display:block;font-size:15px;color:#1b477e}
+.tree-child span,.tree-leaf span{display:block;color:#61748e;font-size:12px}
+.tree-branch{display:grid;grid-template-columns:1fr 1fr;gap:13px;position:relative;padding-top:26px;margin-top:4px}
+.tree-branch:before{content:"";position:absolute;top:0;left:50%;height:15px;border-left:2px solid #89a9ce}
+.tree-branch:after{content:"";position:absolute;top:15px;left:25%;right:25%;border-top:2px solid #89a9ce}
+.tree-column{position:relative;padding-top:11px}
+.tree-column:before{content:"";position:absolute;top:0;left:50%;height:11px;border-left:2px solid #89a9ce}
+.tree-leaf{margin-top:23px;position:relative}
+.tree-leaf:before{content:"↓";position:absolute;left:50%;top:-26px;transform:translateX(-50%);color:#4a80b6;font-weight:800}
+.diagram-key{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px;font-size:12px;color:#506887}
+.diagram-key span{padding:4px 8px;background:#eef4fb;border-radius:6px}
+.flow-intro{margin:0 0 12px;color:#526985}
+.event-flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:11px;align-items:stretch}
+.flow-step{position:relative;min-width:0;border:1px solid #cfdeee;background:#f8fbff;border-radius:11px;padding:12px 10px;min-height:154px}
+.flow-step:not(:last-child):after{content:"→";position:absolute;right:-12px;top:50%;transform:translateY(-50%);z-index:1;color:#2277c6;background:white;font-size:20px;font-weight:900;line-height:1}
+.flow-step.event{border-top:4px solid #1883cf}
+.flow-step.property{border-top:4px solid #328658}
+.flow-step.process{border-top:4px solid #a46d2d}
+.flow-num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#daeafa;color:#1e609e;font-size:12px;font-weight:800;margin-bottom:7px}
+.flow-step strong{display:block;font-size:13px;line-height:1.45}
+.flow-step p{font-size:12px;line-height:1.55;color:#526783;margin:6px 0 0;overflow-wrap:anywhere}
+.flow-step code{display:inline-block;background:#e9eff7;color:#214a79;padding:1px 4px;border-radius:4px;overflow-wrap:anywhere}
+.flow-legend{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px;font-size:12px}
+.flow-legend span{padding:4px 9px;border-radius:7px;background:#edf4fb;color:#365879}
+.flow-legend b{margin-right:4px}
+.flow-legend .event-key b{color:#0878c2}.flow-legend .prop-key b{color:#26794c}.flow-legend .process-key b{color:#966022}
+.summary-note{margin-bottom:0}
+.summary-note code{overflow-wrap:anywhere}
+@media(max-width:960px){.event-flow{grid-template-columns:1fr;gap:20px}.flow-step{min-height:0}.flow-step:not(:last-child):after{content:"↓";top:auto;bottom:-22px;right:50%;transform:translateX(50%);font-size:19px}}
+@media(max-width:700px){
+  #overview,#data,#list,#tile,#selector,#detail{scroll-margin-top:130px}
+  .overview-grid{grid-template-columns:1fr}
+  .event-flow{grid-template-columns:1fr;gap:20px}
+  .flow-step{min-height:0;padding:12px 14px}
+  .flow-step:not(:last-child):after{content:"↓";top:auto;bottom:-22px;right:50%;transform:translateX(50%);font-size:19px}
+  .tablewrap{overflow:visible;padding:0 12px 14px}
+  table,tbody,tr,td{display:block;width:100%;min-width:0}
+  thead{display:none}
+  tr{border:1px solid #d9e0eb;border-radius:10px;margin-top:12px;overflow:hidden}
+  td{border:0;padding:10px 13px;overflow-wrap:anywhere}
+  td+td{border-top:1px solid #e3e9f2}
+  td:nth-child(1){width:100%;background:#edf2f9;font-size:15px}
+  td:nth-child(2){width:100%;display:flex;align-items:center;gap:12px}
+  td:nth-child(2):before{content:"理解度";font-size:12px;font-weight:800;color:#5f7390}
+  td:nth-child(3){width:100%;font-size:14px}
+  .screen-body{grid-template-columns:1.2fr 1fr}
+  .top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+  .brand{min-width:0;font-size:16px;white-space:normal;line-height:1.35}
+  .search{grid-column:1/-1;grid-row:2;width:100%;min-width:0;flex:none}
+  .menu{grid-column:2;grid-row:1}
+}
+@media(max-width:390px){.screen-body{grid-template-columns:1fr}.screen-list{border-right:0;border-bottom:1px solid #d9e3f0}.screen-detail{min-height:115px}.tree-branch{gap:7px}.diagram-panel{padding:13px}}
+</style></head><body><header><div class="top"><div class="brand">Salesforce 開発入門</div><input id="search" class="search" placeholder="サイト内検索" aria-label="サイト内検索"><button id="menu" class="menu" aria-controls="site-nav" aria-expanded="false">目次</button></div><nav id="site-nav" aria-label="ページ内の目次"><a href="#overview">全体像と図</a><a href="#data">data</a><a href="#list">list</a><a href="#tile">tile</a><a href="#selector">selector</a><a href="#detail">detail</a></nav></header><main><section class="hero" id="overview" aria-labelledby="overview-title">
+  <p class="eyebrow">SALESFORCE LWC / 学習ガイド</p>
+  <h1 id="overview-title">Bike Selector の全体像</h1>
+  <p class="lead">自転車を選ぶと詳細が変わる仕組みを、画面・コンポーネント・コードの順に見ていきます。</p>
+
+  <h2 class="overview-title">画面イメージ <small>一覧で自転車を選び、右側に選択した1台の詳細を表示する構成です。</small></h2>
+  <div class="overview-grid">
+    <div class="diagram-panel">
+      <p class="diagram-label">ユーザーに見える画面の概念図</p>
+      <div class="screen-frame" role="img" aria-label="Select a Bike の画面イメージ。左の一覧から自転車をクリックすると、右の詳細欄に選択した自転車が表示される。">
+        <div class="screen-bar">Select a Bike</div>
+        <div class="screen-body">
+          <div class="screen-list"><p class="mock-title">自転車一覧 · list / tile</p>
+            <div class="mock-product is-selected"><svg class="bike-icon" viewBox="0 0 42 26" aria-hidden="true"><circle cx="8" cy="19" r="6"/><circle cx="34" cy="19" r="6"/><path d="M8 19l8-13 8 13H8m8-13h7m1 13 6-11h-7m7 11h4M13 6h6"/></svg>DYNAMO X1 <span aria-hidden="true">→</span></div>
+            
+            
+          </div>
+          <div class="screen-detail"><p class="mock-title">選択した1台 · detail</p><span class="mock-chip">選択中</span><div class="mock-detail-name">DYNAMO X1</div><div class="mock-detail-line"></div><div class="mock-detail-line short"></div><div class="mock-detail-line"></div></div>
+        </div>
+      </div>
+      <p class="diagram-caption">※ 提供された data.js の1件を使った構成イメージです。提供コードに detail.html がないため、詳細欄の実際の表示内容は示していません。</p>
+    </div>
+    <div class="diagram-panel">
+      <p class="diagram-label">コンポーネントの親子関係</p>
+      <div class="tree-root">selector <span class="mini">全体をまとめる親</span></div>
+      <div class="tree-branch">
+        <div class="tree-column"><div class="tree-child"><strong>list</strong><span>自転車を並べる</span></div><div class="tree-leaf"><strong>tile × 複数</strong><span>1台ずつ表示</span></div></div>
+        <div class="tree-column"><div class="tree-child"><strong>detail</strong><span>選択された1台を探す</span></div></div>
+      </div>
+      <div class="diagram-key"><span>data.js → list / detail：bikes</span><span>list → tile：product={bike}</span><span>selector → detail：product-id={selectedProductId}</span></div>
+    </div>
+  </div>
+
+  <h2 class="overview-title">クリックから詳細表示まで <small>青は子から親へのイベント、緑は親から子へのプロパティです。</small></h2>
+  <p class="flow-intro">選択した自転車の <b>Id</b> が、名前を変えながら各コンポーネントを通ります。</p>
+  <div class="event-flow" aria-label="クリックから詳細表示までの流れ">
+    <div class="flow-step process"><span class="flow-num">1</span><strong>tile をクリック</strong><p><code>onclick={tileClick}</code> で処理を始める。</p></div>
+    <div class="flow-step event"><span class="flow-num">2</span><strong>tile → list</strong><p><code>tileclick</code> を発行。<code>detail</code> に自転車の Id を入れる。</p></div>
+    <div class="flow-step event"><span class="flow-num">3</span><strong>list → selector</strong><p><code>evt.detail</code> を受け取り、<code>productselected</code> で同じ Id を通知。</p></div>
+    <div class="flow-step process"><span class="flow-num">4</span><strong>selector が Id を保存</strong><p><code>selectedProductId = evt.detail</code> に更新。</p></div>
+    <div class="flow-step property"><span class="flow-num">5</span><strong>selector → detail</strong><p><code>product-id={selectedProductId}</code> で Id を渡す。</p></div>
+    <div class="flow-step process"><span class="flow-num">6</span><strong>detail が1台を探す</strong><p>setter で <code>bikes.find(...)</code> を実行し、見つけた自転車を <code>product</code> に保存。</p></div>
+  </div>
+  <div class="flow-legend"><span class="event-key"><b>●</b> イベント：子 → 親</span><span class="prop-key"><b>●</b> プロパティ：親 → 子</span><span class="process-key"><b>●</b> コンポーネント内の処理</span></div>
+  <div class="note summary-note"><b>Id の経路</b>：tile の <code>detail</code> → list の <code>evt.detail</code> → selector の <code>selectedProductId</code> → detail の <code>productId</code>。<br>detail.js は該当する自転車を <code>product</code> に保存します。</div>
+  <p class="muted mini">各表の理解度ボタンは「未確認 → 確認中 → 説明できる」で切り替わり、このブラウザに保存されます。</p>
+</section><section class="section" id="data"><div class="section-head"><h2>data — 一覧と詳細に使うデータ</h2><p>list.js と detail.js は <code>c/data</code> から <code>bikes</code> 配列を読み込みます。</p></div><div class="filepanel" id="panel-data"><div class="note"><b>提供されたコード</b>：画像URLの <code>https://...</code> は元の記載どおりの省略表記です。画像を実際に表示するには完全なURLが必要です。</div><div class="tabs"><button class="tab active" data-section="data" data-file="data.js">data.js</button></div><div class="filelabel">data.js</div><pre class="codebox">export const bikes = [
+    {
+        apiName: &quot;Product__c&quot;,
+        fields: {
+            Id: {
+                value: &quot;a0256000001F1arAAC&quot;
+            },
+            Name: {
+                value: &quot;DYNAMO X1&quot;
+            },
+            Category__c: {
+                value: &quot;Mountain&quot;
+            },
+            MSRP__c: {
+                displayValue: &quot;$7,800&quot;,
+                value: 7800
+            },
+            Material__c: {
+                value: &quot;Carbon&quot;
+            },
+            Picture_URL__c: {
+                value: &quot;https://.../dynamox1.jpg&quot;
+            }
+        }
+    }
+];</pre></div><div class="tablewrap"><table><thead><tr><th>何をしている？</th><th>理解度</th><th>コードと詳しい説明</th></tr></thead><tbody><tr><td><b>配列として公開する</b></td><td><button class="status s0" data-key="lwc-data-0">未確認</button></td><td><div class="source">data.js</div><code>export const bikes = [...]</code><p>list.js と detail.js は <code>import { bikes } from 'c/data'</code> で読み込みます。現在の提供コードには自転車が1件入っています。</p></td></tr><tr><td><b>レコードの種類を示す</b></td><td><button class="status s0" data-key="lwc-data-1">未確認</button></td><td><div class="source">data.js</div><code>apiName: &quot;Product__c&quot;</code><p>このデータが Product__c のレコードを表すことを示します。</p></td></tr><tr><td><b>自転車を一意に識別する</b></td><td><button class="status s0" data-key="lwc-data-2">未確認</button></td><td><div class="source">data.js</div><code>Id.value</code><p>tile は Id をイベントで送り、detail は同じ Id を使って <code>bikes.find(...)</code> で1件を探します。</p></td></tr><tr><td><b>名前と画像を一覧に表示する</b></td><td><button class="status s0" data-key="lwc-data-3">未確認</button></td><td><div class="source">data.js</div><code>Name.value / Picture_URL__c.value</code><p>tile.html は Name を文字として、Picture_URL__c を画像の <code>src</code> として使います。</p></td></tr><tr><td><b>カテゴリと素材を持つ</b></td><td><button class="status s0" data-key="lwc-data-4">未確認</button></td><td><div class="source">data.js</div><code>Category__c.value / Material__c.value</code><p>この例では Mountain と Carbon です。提供された tile.html では表示せず、詳細画面などで利用できる値です。</p></td></tr><tr><td><b>価格の値と表示文字列を分ける</b></td><td><button class="status s0" data-key="lwc-data-5">未確認</button></td><td><div class="source">data.js</div><code>MSRP__c.value / MSRP__c.displayValue</code><p><code>value</code> は数値の 7800、<code>displayValue</code> は表示用の $7,800 です。提供された tile.html では表示していません。</p></td></tr></tbody></table></div></section><section class="section" id="list"><div class="section-head"><h2>list — 一覧を作る</h2><p>data.js の bikes を繰り返して、各自転車を tile に渡します。</p></div><div class="filepanel" id="panel-list"><div class="tabs"><button class="tab active" data-section="list" data-file="list.html">list.html</button><button class="tab " data-section="list" data-file="list.js">list.js</button></div><div class="filelabel">list.html</div><pre class="codebox">&lt;template&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;template for:each={bikes} for:item=&quot;bike&quot;&gt;
+            &lt;c-tile
+                key={bike.fields.Id.value}
+                product={bike}
+                ontileclick={handleTileClick}&gt;
+            &lt;/c-tile&gt;
+        &lt;/template&gt;
+    &lt;/div&gt;
+&lt;/template&gt;</pre></div><div class="tablewrap"><table><thead><tr><th>何をしている？</th><th>理解度</th><th>コードと詳しい説明</th></tr></thead><tbody><tr><td><b>データを一覧用のプロパティに保存</b></td><td><button class="status s0" data-key="lwc-list-0">未確認</button></td><td><div class="source">list.js</div><code>bikes = bikes;</code><p>右側の bikes は import した配列、左側は List コンポーネントのプロパティです。HTML から {bikes} で参照できます。</p></td></tr><tr><td><b>自転車の数だけ繰り返す</b></td><td><button class="status s0" data-key="lwc-list-1">未確認</button></td><td><div class="source">list.html</div><code>for:each={bikes} for:item=&quot;bike&quot;</code><p>bikes 配列の各要素を bike という名前で取り出し、c-tile を1個ずつ作ります。</p></td></tr><tr><td><b>繰り返し要素を一意に識別する</b></td><td><button class="status s0" data-key="lwc-list-2">未確認</button></td><td><div class="source">list.html</div><code>key={bike.fields.Id.value}</code><p>LWC が一覧の追加・変更時にどの要素がどれかを判別するためのキーです。各 bike の Id を使います。</p></td></tr><tr><td><b>親から子にデータを渡す</b></td><td><button class="status s0" data-key="lwc-list-3">未確認</button></td><td><div class="source">list.html</div><code>product={bike}</code><p>list が持っている1台分の bike オブジェクトを tile の公開プロパティ product に渡します。</p></td></tr><tr><td><b>子のイベントを受け取る</b></td><td><button class="status s0" data-key="lwc-list-4">未確認</button></td><td><div class="source">list.html</div><code>ontileclick={handleTileClick}</code><p>tile が tileclick を発行したとき、list.js の handleTileClick が実行されます。</p></td></tr><tr><td><b>子の通知を受ける</b></td><td><button class="status s0" data-key="lwc-list-5">未確認</button></td><td><div class="source">list.js</div><code>handleTileClick(evt)</code><p>evt は tile から届いたイベントです。evt.detail に選択された自転車の Id が入っています。</p></td></tr><tr><td><b>親向けのイベントを新しく作る</b></td><td><button class="status s0" data-key="lwc-list-6">未確認</button></td><td><div class="source">list.js</div><code>new CustomEvent(&#x27;productselected&#x27;, { detail: evt.detail })</code><p>tileclick をそのまま上に流すのではなく、list が productselected という別のイベントを作ります。detail は受け取った Id です。</p></td></tr><tr><td><b>list から親にイベントを送る</b></td><td><button class="status s0" data-key="lwc-list-7">未確認</button></td><td><div class="source">list.js</div><code>this.dispatchEvent(event)</code><p>作った productselected イベントを selector に通知します。</p></td></tr></tbody></table></div></section><section class="section" id="tile"><div class="section-head"><h2>tile — クリックを知らせる</h2><p>1台の自転車を表示し、クリックされた Id を list に通知します。</p></div><div class="filepanel" id="panel-tile"><div class="tabs"><button class="tab active" data-section="tile" data-file="tile.html">tile.html</button><button class="tab " data-section="tile" data-file="tile.js">tile.js</button></div><div class="filelabel">tile.html</div><pre class="codebox">&lt;template&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;a onclick={tileClick}&gt;
+            &lt;div class=&quot;title&quot;&gt;{product.fields.Name.value}&lt;/div&gt;
+            &lt;img class=&quot;product-img&quot; src={product.fields.Picture_URL__c.value}&gt;&lt;/img&gt;
+        &lt;/a&gt;
+    &lt;/div&gt;
+&lt;/template&gt;</pre></div><div class="tablewrap"><table><thead><tr><th>何をしている？</th><th>理解度</th><th>コードと詳しい説明</th></tr></thead><tbody><tr><td><b>親から受け取る公開プロパティ</b></td><td><button class="status s0" data-key="lwc-tile-0">未確認</button></td><td><div class="source">tile.js</div><code>@api product;</code><p>list.html の product={bike} がここに入ります。@api があるため親コンポーネントから値を渡せます。</p></td></tr><tr><td><b>自転車名を表示する</b></td><td><button class="status s0" data-key="lwc-tile-1">未確認</button></td><td><div class="source">tile.html</div><code>{product.fields.Name.value}</code><p>受け取った product の Name フィールドの value を画面に表示します。</p></td></tr><tr><td><b>画像URLを設定する</b></td><td><button class="status s0" data-key="lwc-tile-2">未確認</button></td><td><div class="source">tile.html</div><code>src={product.fields.Picture_URL__c.value}</code><p>自転車レコードの画像URLを img 要素の src に使います。</p></td></tr><tr><td><b>クリックを JavaScript に伝える</b></td><td><button class="status s0" data-key="lwc-tile-3">未確認</button></td><td><div class="source">tile.html</div><code>onclick={tileClick}</code><p>ユーザーが a 要素をクリックすると tile.js の tileClick が呼ばれます。</p></td></tr><tr><td><b>選択した自転車の Id をイベントに入れる</b></td><td><button class="status s0" data-key="lwc-tile-4">未確認</button></td><td><div class="source">tile.js</div><code>new CustomEvent(&#x27;tileclick&#x27;, { detail: this.product.fields.Id.value })</code><p>detail はイベントに付ける追加データです。ここでは Id という文字列を入れています。</p></td></tr><tr><td><b>tile から list へ通知する</b></td><td><button class="status s0" data-key="lwc-tile-5">未確認</button></td><td><div class="source">tile.js</div><code>this.dispatchEvent(event)</code><p>tileclick を発行します。list.html の ontileclick が受け取ります。</p></td></tr></tbody></table></div></section><section class="section" id="selector"><div class="section-head"><h2>selector — 全体をつなぐ</h2><p>list の選択通知を受け取り、detail に選択 Id を渡します。</p></div><div class="filepanel" id="panel-selector"><div class="tabs"><button class="tab active" data-section="selector" data-file="selector.html">selector.html</button><button class="tab " data-section="selector" data-file="selector.js">selector.js</button></div><div class="filelabel">selector.html</div><pre class="codebox">&lt;template&gt;
+    &lt;div class=&quot;wrapper&quot;&gt;
+        &lt;header class=&quot;header&quot;&gt;Select a Bike&lt;/header&gt;
+        &lt;section class=&quot;content&quot;&gt;
+            &lt;div class=&quot;columns&quot;&gt;
+                &lt;main class=&quot;main&quot;&gt;
+                    &lt;c-list onproductselected={handleProductSelected}&gt;&lt;/c-list&gt;
+                &lt;/main&gt;
+                &lt;aside class=&quot;sidebar-second&quot;&gt;
+                    &lt;c-detail product-id={selectedProductId}&gt;&lt;/c-detail&gt;
+                &lt;/aside&gt;
+            &lt;/div&gt;
+        &lt;/section&gt;
+    &lt;/div&gt;
+&lt;/template&gt;</pre></div><div class="tablewrap"><table><thead><tr><th>何をしている？</th><th>理解度</th><th>コードと詳しい説明</th></tr></thead><tbody><tr><td><b>list のイベントを監視する</b></td><td><button class="status s0" data-key="lwc-selector-0">未確認</button></td><td><div class="source">selector.html</div><code>&lt;c-list onproductselected={handleProductSelected}&gt;</code><p>list が productselected を発行すると selector.js の handleProductSelected が動きます。</p></td></tr><tr><td><b>選択中の Id を保持する</b></td><td><button class="status s0" data-key="lwc-selector-1">未確認</button></td><td><div class="source">selector.js</div><code>selectedProductId;</code><p>初期値は undefined です。クリック後は自転車の Id が入ります。</p></td></tr><tr><td><b>list からの通知を処理する</b></td><td><button class="status s0" data-key="lwc-selector-2">未確認</button></td><td><div class="source">selector.js</div><code>handleProductSelected(evt)</code><p>evt.detail には list が送った自転車 Id が入っています。</p></td></tr><tr><td><b>選択 Id を更新する</b></td><td><button class="status s0" data-key="lwc-selector-3">未確認</button></td><td><div class="source">selector.js</div><code>this.selectedProductId = evt.detail;</code><p>イベントで届いた Id を保存します。この変更がテンプレートに反映されます。</p></td></tr><tr><td><b>detail に Id を渡す</b></td><td><button class="status s0" data-key="lwc-selector-4">未確認</button></td><td><div class="source">selector.html</div><code>&lt;c-detail product-id={selectedProductId}&gt;</code><p>HTML の product-id は JavaScript の productId に対応します。親から子へのプロパティ受け渡しです。</p></td></tr></tbody></table></div></section><section class="section" id="detail"><div class="section-head"><h2>detail — 選択した1台を探す</h2><p>受け取った Id と一致する自転車を探して product に保存します。</p></div><div class="filepanel" id="panel-detail"><div class="tabs"><button class="tab active" data-section="detail" data-file="detail.js">detail.js</button></div><div class="filelabel">detail.js</div><pre class="codebox">import { LightningElement, api } from &#x27;lwc&#x27;;
+import { bikes } from &#x27;c/data&#x27;;
+
+export default class Detail extends LightningElement {
+    product;
+    _productId = undefined;
+
+    set productId(value) {
+        this._productId = value;
+        this.product = bikes.find(bike =&gt; bike.fields.Id.value === value);
+    }
+
+    @api get productId() {
+        return this._productId;
+    }
+}</pre></div><div class="tablewrap"><table><thead><tr><th>何をしている？</th><th>理解度</th><th>コードと詳しい説明</th></tr></thead><tbody><tr><td><b>表示対象の自転車を保持する</b></td><td><button class="status s0" data-key="lwc-detail-0">未確認</button></td><td><div class="source">detail.js</div><code>product;</code><p>見つかった自転車オブジェクトを格納するプロパティです。</p></td></tr><tr><td><b>内部で Id を保持する</b></td><td><button class="status s0" data-key="lwc-detail-1">未確認</button></td><td><div class="source">detail.js</div><code>_productId = undefined;</code><p>外部公開の productId と区別するための内部プロパティです。アンダースコアは慣習的な命名です。</p></td></tr><tr><td><b>親から渡された値を処理する</b></td><td><button class="status s0" data-key="lwc-detail-2">未確認</button></td><td><div class="source">detail.js</div><code>set productId(value)</code><p>selector が product-id に新しい値を渡すと setter が呼ばれ、value にその Id が入ります。</p></td></tr><tr><td><b>受け取った Id を記録する</b></td><td><button class="status s0" data-key="lwc-detail-3">未確認</button></td><td><div class="source">detail.js</div><code>this._productId = value;</code><p>getter で返すため、内部プロパティに Id を保存します。</p></td></tr><tr><td><b>Id が一致する1件を検索する</b></td><td><button class="status s0" data-key="lwc-detail-4">未確認</button></td><td><div class="source">detail.js</div><code>bikes.find(bike =&gt; bike.fields.Id.value === value)</code><p>配列の先頭から条件に一致する最初の bike を返します。一致しなければ undefined です。</p></td></tr><tr><td><b>公開プロパティの値を読み出す</b></td><td><button class="status s0" data-key="lwc-detail-5">未確認</button></td><td><div class="source">detail.js</div><code>@api get productId()</code><p>getter は _productId を返します。@api によって親から利用できる公開プロパティになります。</p></td></tr></tbody></table></div></section><section class="section"><div class="section-head"><h2>覚えておきたいポイント</h2></div><div class="filepanel"><p><b>CustomEvent</b>：イベントを作る。<b>detail</b>：イベントに付ける値。<b>dispatchEvent</b>：イベントを発行する。</p><p><b>on + イベント名</b>：親のHTMLでイベントを受ける。例：<code>ontileclick</code>、<code>onproductselected</code>。</p><p><b>@api</b>：親からアクセスできる公開プロパティ。<b>get</b>：値を読む。<b>set</b>：値を受け取って追加処理する。</p><p><b>注意</b>：<code>detail.html</code> は今回の提供コードに含まれていないため、detail の画面表示部分は解説対象外です。</p></div></section><div class="footer">LWC Bike Selector 学習資料・オフライン閲覧対応</div></main><script>window.FILE_CODES={"data.js": "export const bikes = [\n    {\n        apiName: \"Product__c\",\n        fields: {\n            Id: {\n                value: \"a0256000001F1arAAC\"\n            },\n            Name: {\n                value: \"DYNAMO X1\"\n            },\n            Category__c: {\n                value: \"Mountain\"\n            },\n            MSRP__c: {\n                displayValue: \"$7,800\",\n                value: 7800\n            },\n            Material__c: {\n                value: \"Carbon\"\n            },\n            Picture_URL__c: {\n                value: \"https://.../dynamox1.jpg\"\n            }\n        }\n    }\n];", "list.html": "<template>\n    <div class=\"container\">\n        <template for:each={bikes} for:item=\"bike\">\n            <c-tile\n                key={bike.fields.Id.value}\n                product={bike}\n                ontileclick={handleTileClick}>\n            <\/c-tile>\n        <\/template>\n    <\/div>\n<\/template>", "list.js": "import { LightningElement } from 'lwc';\nimport { bikes } from 'c/data';\n\nexport default class List extends LightningElement {\n    bikes = bikes;\n\n    handleTileClick(evt) {\n        const event = new CustomEvent('productselected', {\n            detail: evt.detail\n        });\n        this.dispatchEvent(event);\n    }\n}", "tile.html": "<template>\n    <div class=\"container\">\n        <a onclick={tileClick}>\n            <div class=\"title\">{product.fields.Name.value}<\/div>\n            <img class=\"product-img\" src={product.fields.Picture_URL__c.value}><\/img>\n        <\/a>\n    <\/div>\n<\/template>", "tile.js": "import { LightningElement, api } from 'lwc';\n\nexport default class Tile extends LightningElement {\n    @api product;\n\n    tileClick() {\n        const event = new CustomEvent('tileclick', {\n            detail: this.product.fields.Id.value\n        });\n        this.dispatchEvent(event);\n    }\n}", "selector.html": "<template>\n    <div class=\"wrapper\">\n        <header class=\"header\">Select a Bike<\/header>\n        <section class=\"content\">\n            <div class=\"columns\">\n                <main class=\"main\">\n                    <c-list onproductselected={handleProductSelected}><\/c-list>\n                <\/main>\n                <aside class=\"sidebar-second\">\n                    <c-detail product-id={selectedProductId}><\/c-detail>\n                <\/aside>\n            <\/div>\n        <\/section>\n    <\/div>\n<\/template>", "selector.js": "import { LightningElement } from 'lwc';\n\nexport default class Selector extends LightningElement {\n    selectedProductId;\n\n    handleProductSelected(evt) {\n        this.selectedProductId = evt.detail;\n    }\n}", "detail.js": "import { LightningElement, api } from 'lwc';\nimport { bikes } from 'c/data';\n\nexport default class Detail extends LightningElement {\n    product;\n    _productId = undefined;\n\n    set productId(value) {\n        this._productId = value;\n        this.product = bikes.find(bike => bike.fields.Id.value === value);\n    }\n\n    @api get productId() {\n        return this._productId;\n    }\n}"};</script><script>const files=window.FILE_CODES;const sections=document.querySelectorAll('.section');function showFile(id,name){const panel=document.querySelector('#panel-'+id);panel.querySelector('.filelabel').textContent=name;panel.querySelector('pre').textContent=files[name];panel.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.file===name))}document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showFile(b.dataset.section,b.dataset.file)));document.querySelectorAll('.status').forEach(b=>{const key=b.dataset.key;let n=Number(localStorage.getItem(key)||0);function draw(){b.className='status s'+n;b.textContent=['未確認','確認中','説明できる'][n];b.setAttribute('aria-label','理解度: '+b.textContent+'。押すと変更')}draw();b.addEventListener('click',()=>{n=(n+1)%3;localStorage.setItem(key,n);draw()})});document.querySelector('#search').addEventListener('input',e=>{const q=e.target.value.toLowerCase().trim();sections.forEach(s=>{let visible=0;s.querySelectorAll('tbody tr').forEach(r=>{let ok=!q||r.textContent.toLowerCase().includes(q);r.classList.toggle('hide',!ok);if(ok)visible++});s.classList.toggle('hide',!!q&&!visible&&!s.querySelector('.section-head').textContent.toLowerCase().includes(q))})});document.querySelector('#menu').addEventListener('click',e=>{const open=document.querySelector('#site-nav').classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',String(open))});document.querySelectorAll('#site-nav a').forEach(a=>a.addEventListener('click',()=>{document.querySelector('#site-nav').classList.remove('open');document.querySelector('#menu').setAttribute('aria-expanded','false')}));</script></body></html>
